@@ -29,8 +29,8 @@ export default function HomePage() {
 
       <section className="grid gap-6 sm:grid-cols-3">
         <FeatureCard
-          title="Interval & Chord Trainer"
-          body="Rapid-fire quizzes that adapt as you go. Name what you hear and see."
+          title="Trainer & Ear Training"
+          body="Rapid-fire quizzes — see the notes, hear them played, or identify by ear alone."
         />
         <FeatureCard
           title="Focused Lessons"

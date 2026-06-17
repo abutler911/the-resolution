@@ -33,6 +33,9 @@ export default function Layout() {
             <NavLink to="/trainer" className={navClass}>
               Trainer
             </NavLink>
+            <NavLink to="/ear-training" className={navClass}>
+              Ear Training
+            </NavLink>
             <NavLink to="/lessons" className={navClass}>
               Lessons
             </NavLink>
