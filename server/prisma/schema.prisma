@@ -1,0 +1,84 @@
+// The Resolution — data model
+// Postgres + Prisma. Run `npm run db:migrate` after editing.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  displayName  String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  attempts        ExerciseAttempt[]
+  lessonProgress  LessonProgress[]
+}
+
+// A unit of learning content (e.g. "The Circle of Fifths", "Diatonic Triads").
+model Lesson {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  summary   String
+  // Markdown body for the lesson content.
+  body      String
+  category  LessonCategory @default(FUNDAMENTALS)
+  // Ordering within a category.
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress  LessonProgress[]
+}
+
+enum LessonCategory {
+  FUNDAMENTALS
+  INTERVALS
+  CHORDS
+  SCALES
+  HARMONY
+}
+
+// One person's recorded attempt at a generated trainer question.
+model ExerciseAttempt {
+  id           String       @id @default(cuid())
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  type         ExerciseType
+  // The prompt shown, the user's answer, and the correct answer (free-form labels).
+  prompt       String
+  answer       String
+  correctAnswer String
+  isCorrect    Boolean
+  createdAt    DateTime     @default(now())
+
+  @@index([userId, type])
+}
+
+enum ExerciseType {
+  INTERVAL
+  CHORD_QUALITY
+  SCALE
+}
+
+// Tracks a user's relationship to a lesson (read / completed).
+model LessonProgress {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId    String
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+}

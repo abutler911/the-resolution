@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: resolution-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: resolution
+      POSTGRES_PASSWORD: resolution
+      POSTGRES_DB: resolution
+    ports:
+      - "5432:5432"
+    volumes:
+      - resolution-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resolution"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  resolution-data:
