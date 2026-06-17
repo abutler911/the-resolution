@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { ChoiceGrid, TypeTabs } from "../components/QuizControls";
+import { useCallback, useEffect, useState } from "react";
+import { ChoiceGrid, Scoreboard, TypeTabs } from "../components/QuizControls";
 import { playNotes, type PlayMode } from "../lib/audio";
-import { useQuiz } from "../hooks/useQuiz";
+import { useQuiz, useQuizKeys } from "../hooks/useQuiz";
 import type { ExerciseType, Question } from "../types";
 
 // Chords are most recognizable played together; melodies one note at a time.
@@ -11,25 +11,46 @@ function defaultMode(type: ExerciseType): PlayMode {
 
 export default function EarTrainingPage() {
   const [type, setType] = useState<ExerciseType>("INTERVAL");
-  const { question, selected, score, loadQuestion, answer, user } =
+  const { question, selected, stats, loadQuestion, answer, isCorrect, user } =
     useQuiz(type);
   const [started, setStarted] = useState(false);
 
-  // Load the next question and play it. Triggered from a click, so audio is
-  // unlocked by the user gesture.
-  async function next() {
-    const q = await loadQuestion();
-    setStarted(true);
-    void playNotes(q.midi, defaultMode(q.type));
+  function play(q: Question, mode?: PlayMode) {
+    void playNotes(q.midi, mode ?? defaultMode(q.type));
   }
 
-  function replay(mode: PlayMode, q: Question) {
-    void playNotes(q.midi, mode);
+  // Load the next question and play it. Triggered from a user gesture (button
+  // or auto-advance after the unlocking first click), so audio is allowed.
+  const next = useCallback(async () => {
+    const q = await loadQuestion();
+    play(q);
+  }, [loadQuestion]);
+
+  function start() {
+    setStarted(true);
+    if (question) play(question);
+    else void next();
   }
+
+  // Auto-advance after a correct answer.
+  useEffect(() => {
+    if (started && selected && isCorrect) {
+      const t = setTimeout(() => void next(), 900);
+      return () => clearTimeout(t);
+    }
+  }, [started, selected, isCorrect, next]);
+
+  useQuizKeys({
+    enabled: started && !!question,
+    answered: !!selected,
+    choices: question?.choices ?? [],
+    onAnswer: answer,
+    onNext: () => void next(),
+  });
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <TypeTabs
           value={type}
           onChange={(t) => {
@@ -37,9 +58,7 @@ export default function EarTrainingPage() {
             setStarted(false);
           }}
         />
-        <span className="text-sm text-slate-500">
-          {score.correct}/{score.total}
-        </span>
+        <Scoreboard stats={stats} />
       </div>
 
       {!user && (
@@ -58,7 +77,7 @@ export default function EarTrainingPage() {
             <p className="mb-4 text-slate-600">
               Listen and identify what you hear — no notes shown.
             </p>
-            <button onClick={next} className="btn-primary">
+            <button onClick={start} className="btn-primary">
               ▶ Start ear training
             </button>
           </div>
@@ -70,13 +89,13 @@ export default function EarTrainingPage() {
 
             <div className="mb-6 flex justify-center gap-2">
               <button
-                onClick={() => replay("melodic", question)}
+                onClick={() => play(question, "melodic")}
                 className="btn-ghost text-sm"
               >
                 🔊 Melodic
               </button>
               <button
-                onClick={() => replay("harmonic", question)}
+                onClick={() => play(question, "harmonic")}
                 className="btn-ghost text-sm"
               >
                 🔊 Harmonic
@@ -90,16 +109,18 @@ export default function EarTrainingPage() {
               onAnswer={answer}
             />
 
-            {selected && (
-              <>
-                <p className="mt-6 text-sm text-slate-500">
-                  {question.prompt}
-                </p>
-                <button onClick={next} className="btn-accent mt-4 w-full">
-                  Next question →
-                </button>
-              </>
-            )}
+            <div className="mt-5 min-h-[2.5rem]">
+              {selected &&
+                (isCorrect ? (
+                  <p className="font-medium text-emerald-600">
+                    ✓ {question.prompt}
+                  </p>
+                ) : (
+                  <button onClick={() => void next()} className="btn-accent w-full">
+                    {question.prompt} — Next →
+                  </button>
+                ))}
+            </div>
           </>
         )}
       </div>
