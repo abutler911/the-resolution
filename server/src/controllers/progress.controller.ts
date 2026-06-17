@@ -48,6 +48,19 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
   res.json({ byType, totals, streak, completedLessons });
 }
 
+// Lesson progress records for the signed-in user, so the client can show
+// which lessons are completed and toggle their state.
+export async function listLessonProgress(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const progress = await prisma.lessonProgress.findMany({
+    where: { userId: req.userId! },
+    select: { lessonId: true, completed: true, completedAt: true },
+  });
+  res.json({ progress });
+}
+
 const completeSchema = z.object({
   lessonId: z.string().min(1),
   completed: z.boolean().default(true),
