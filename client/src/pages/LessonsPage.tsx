@@ -1,26 +1,65 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { api } from "../api/client";
-import type { Lesson, LessonSummary } from "../types";
+import { useAuth } from "../context/AuthContext";
+import type { Lesson, LessonProgress, LessonSummary } from "../types";
 
 export default function LessonsPage() {
+  const { user } = useAuth();
   const [lessons, setLessons] = useState<LessonSummary[]>([]);
   const [active, setActive] = useState<Lesson | null>(null);
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
+  // Load the lesson list, plus this user's completion state when signed in.
   useEffect(() => {
-    api<{ lessons: LessonSummary[] }>("/lessons")
-      .then((data) => setLessons(data.lessons))
-      .finally(() => setLoading(false));
-  }, []);
+    async function load() {
+      const { lessons } = await api<{ lessons: LessonSummary[] }>("/lessons");
+      setLessons(lessons);
+
+      if (user) {
+        const { progress } = await api<{ progress: LessonProgress[] }>(
+          "/progress/lessons",
+        );
+        setCompleted(
+          new Set(progress.filter((p) => p.completed).map((p) => p.lessonId)),
+        );
+      }
+    }
+    load().finally(() => setLoading(false));
+  }, [user]);
 
   async function openLesson(slug: string) {
-    const data = await api<{ lesson: Lesson }>(`/lessons/${slug}`);
-    setActive(data.lesson);
+    const { lesson } = await api<{ lesson: Lesson }>(`/lessons/${slug}`);
+    setActive(lesson);
   }
+
+  const toggleComplete = useCallback(async () => {
+    if (!active) return;
+    const next = !completed.has(active.id);
+    setSaving(true);
+    try {
+      await api("/progress/lessons", {
+        method: "POST",
+        body: JSON.stringify({ lessonId: active.id, completed: next }),
+      });
+      setCompleted((prev) => {
+        const updated = new Set(prev);
+        if (next) updated.add(active.id);
+        else updated.delete(active.id);
+        return updated;
+      });
+    } finally {
+      setSaving(false);
+    }
+  }, [active, completed]);
 
   if (loading) return <p className="text-slate-500">Loading lessons…</p>;
 
   const grouped = groupByCategory(lessons);
+  const isDone = active ? completed.has(active.id) : false;
 
   return (
     <div className="grid gap-8 md:grid-cols-[260px_1fr]">
@@ -35,13 +74,25 @@ export default function LessonsPage() {
                 <li key={lesson.id}>
                   <button
                     onClick={() => openLesson(lesson.slug)}
-                    className={`w-full rounded-md px-3 py-2 text-left text-sm transition ${
+                    className={`flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm transition ${
                       active?.slug === lesson.slug
                         ? "bg-tension text-white"
                         : "hover:bg-slate-100"
                     }`}
                   >
-                    {lesson.title}
+                    <span>{lesson.title}</span>
+                    {completed.has(lesson.id) && (
+                      <span
+                        aria-label="completed"
+                        className={
+                          active?.slug === lesson.slug
+                            ? "text-resolve"
+                            : "text-emerald-500"
+                        }
+                      >
+                        ✓
+                      </span>
+                    )}
                   </button>
                 </li>
               ))}
@@ -53,16 +104,29 @@ export default function LessonsPage() {
       <article className="card">
         {active ? (
           <>
-            <h1 className="font-display text-2xl font-bold text-tension">
-              {active.title}
-            </h1>
-            <p className="mt-1 text-slate-600">{active.summary}</p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="font-display text-2xl font-bold text-tension">
+                  {active.title}
+                </h1>
+                <p className="mt-1 text-slate-600">{active.summary}</p>
+              </div>
+              {user && (
+                <button
+                  onClick={toggleComplete}
+                  disabled={saving}
+                  className={isDone ? "btn-ghost shrink-0" : "btn-accent shrink-0"}
+                >
+                  {isDone ? "✓ Completed" : "Mark complete"}
+                </button>
+              )}
+            </div>
             <hr className="my-4" />
-            {/* Markdown is rendered as plain text for now — drop in a
-                markdown renderer (e.g. react-markdown) when ready. */}
-            <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-700">
-              {active.body}
-            </pre>
+            <div className="prose prose-slate max-w-none prose-headings:font-display prose-a:text-tension">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {active.body}
+              </ReactMarkdown>
+            </div>
           </>
         ) : (
           <p className="text-slate-500">

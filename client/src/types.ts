@@ -40,3 +40,9 @@ export interface ProgressSummary {
   streak: number;
   completedLessons: number;
 }
+
+export interface LessonProgress {
+  lessonId: string;
+  completed: boolean;
+  completedAt: string | null;
+}
