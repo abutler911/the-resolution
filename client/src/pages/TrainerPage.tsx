@@ -1,25 +1,40 @@
-import { useEffect, useState } from "react";
-import { ChoiceGrid, TypeTabs } from "../components/QuizControls";
+import { useCallback, useEffect, useState } from "react";
+import { ChoiceGrid, Scoreboard, TypeTabs } from "../components/QuizControls";
 import { playNotes } from "../lib/audio";
-import { useQuiz } from "../hooks/useQuiz";
+import { useQuiz, useQuizKeys } from "../hooks/useQuiz";
 import type { ExerciseType } from "../types";
 
 export default function TrainerPage() {
   const [type, setType] = useState<ExerciseType>("INTERVAL");
-  const { question, selected, score, loadQuestion, answer, user } =
+  const { question, selected, stats, loading, loadQuestion, answer, isCorrect, user } =
     useQuiz(type);
 
-  useEffect(() => {
+  const next = useCallback(() => {
     void loadQuestion();
   }, [loadQuestion]);
 
+  // Auto-advance after a correct answer; on a wrong one, pause so the player
+  // can study the right answer and continue when ready.
+  useEffect(() => {
+    if (selected && isCorrect) {
+      const t = setTimeout(next, 850);
+      return () => clearTimeout(t);
+    }
+  }, [selected, isCorrect, next]);
+
+  useQuizKeys({
+    enabled: !loading && !!question,
+    answered: !!selected,
+    choices: question?.choices ?? [],
+    onAnswer: answer,
+    onNext: next,
+  });
+
   return (
     <div className="mx-auto max-w-xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <TypeTabs value={type} onChange={setType} />
-        <span className="text-sm text-slate-500">
-          {score.correct}/{score.total}
-        </span>
+        <Scoreboard stats={stats} />
       </div>
 
       {!user && (
@@ -66,19 +81,29 @@ export default function TrainerPage() {
               />
             </div>
 
-            {selected && (
-              <button
-                onClick={() => loadQuestion()}
-                className="btn-accent mt-6 w-full"
-              >
-                Next question →
-              </button>
-            )}
+            <div className="mt-5 min-h-[2.5rem]">
+              {selected &&
+                (isCorrect ? (
+                  <p className="font-medium text-emerald-600">
+                    ✓ Correct! Next up…
+                  </p>
+                ) : (
+                  <button onClick={next} className="btn-accent w-full">
+                    Answer: {question.correctAnswer} — Next →
+                  </button>
+                ))}
+            </div>
           </>
         ) : (
           <p className="text-slate-500">Loading question…</p>
         )}
       </div>
+
+      <p className="text-center text-xs text-slate-400">
+        Tip: press <kbd className="rounded bg-slate-100 px-1">1</kbd>–
+        <kbd className="rounded bg-slate-100 px-1">4</kbd> to answer,{" "}
+        <kbd className="rounded bg-slate-100 px-1">Enter</kbd> for next.
+      </p>
     </div>
   );
 }
