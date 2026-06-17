@@ -79,10 +79,17 @@ function pick<T>(items: T[]): T {
   return items[randomInt(items.length)];
 }
 
+// Anchor generated pitches around C4 (MIDI 60) for a comfortable range.
+const BASE_MIDI = 60;
+
 export interface GeneratedQuestion {
   type: "INTERVAL" | "CHORD_QUALITY" | "SCALE";
   prompt: string;
   notes: string[];
+  // Absolute MIDI pitch numbers for audio playback. Unlike `notes` (pitch
+  // classes), these preserve octave and ordering so e.g. an octave interval
+  // sounds an octave apart.
+  midi: number[];
   correctAnswer: string;
   choices: string[];
 }
@@ -111,6 +118,7 @@ export function generateIntervalQuestion(): GeneratedQuestion {
     type: "INTERVAL",
     prompt: `What interval is ${noteName(root)} → ${noteName(top)}?`,
     notes: [noteName(root), noteName(top)],
+    midi: [BASE_MIDI + root, BASE_MIDI + top],
     correctAnswer: name,
     choices: withDistractors(name, Object.keys(INTERVALS)),
   };
@@ -124,6 +132,7 @@ export function generateChordQuestion(): GeneratedQuestion {
     type: "CHORD_QUALITY",
     prompt: `Name the chord quality: ${notes.join(" – ")}`,
     notes,
+    midi: intervals.map((i) => BASE_MIDI + root + i),
     correctAnswer: quality,
     choices: withDistractors(quality, Object.keys(CHORD_QUALITIES)),
   };
@@ -133,10 +142,13 @@ export function generateScaleQuestion(): GeneratedQuestion {
   const root = randomInt(12);
   const [name, intervals] = pick(Object.entries(SCALES));
   const notes = intervals.map((i) => noteName(root + i));
+  // Append the octave so the scale resolves nicely when played.
+  const playedIntervals = [...intervals, 12];
   return {
     type: "SCALE",
     prompt: `Which scale/mode is this? ${notes.join(" ")}`,
     notes,
+    midi: playedIntervals.map((i) => BASE_MIDI + root + i),
     correctAnswer: name,
     choices: withDistractors(name, Object.keys(SCALES)),
   };

@@ -10,6 +10,7 @@ export interface Question {
   type: ExerciseType;
   prompt: string;
   notes: string[];
+  midi: number[];
   correctAnswer: string;
   choices: string[];
 }

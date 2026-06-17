@@ -3,6 +3,7 @@ import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
 import TrainerPage from "./pages/TrainerPage";
+import EarTrainingPage from "./pages/EarTrainingPage";
 import LessonsPage from "./pages/LessonsPage";
 import ProgressPage from "./pages/ProgressPage";
 import LoginPage from "./pages/LoginPage";
@@ -14,6 +15,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="trainer" element={<TrainerPage />} />
+        <Route path="ear-training" element={<EarTrainingPage />} />
         <Route path="lessons" element={<LessonsPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
