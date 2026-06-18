@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { AnswerPanel } from "../components/AnswerPanel";
+import { Piano } from "../components/Piano";
 import { ChoiceGrid, Scoreboard, TypeTabs } from "../components/QuizControls";
 import { playNotes } from "../lib/audio";
 import { useQuiz, useQuizKeys } from "../hooks/useQuiz";
@@ -62,6 +63,13 @@ export default function TrainerPage() {
               >
                 ▶ Harmonic
               </button>
+            </div>
+
+            <div className="mt-5">
+              <Piano
+                highlight={question.midi}
+                to={Math.max(84, ...question.midi)}
+              />
             </div>
 
             <div className="mt-6">
