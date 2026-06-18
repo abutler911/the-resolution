@@ -1,0 +1,33 @@
+# Render blueprint for The Resolution API.
+# Deploy via render.com → New → Blueprint, pointing at this repo.
+# Set the `sync: false` env vars (DATABASE_URL, CLIENT_ORIGIN) in the dashboard.
+services:
+  - type: web
+    name: the-resolution-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: .
+    # Install (incl. dev deps for the TS build), generate the Prisma client,
+    # compile, then apply any pending migrations to the database.
+    buildCommand: >-
+      npm ci --include=dev &&
+      npm run prisma:generate --workspace server &&
+      npm run build --workspace server &&
+      npm run prisma:deploy --workspace server
+    startCommand: npm run start --workspace server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Supabase connection string (use the Session pooler URL, port 5432).
+      - key: DATABASE_URL
+        sync: false
+      # Comma-separated allowed frontend origins, e.g.
+      # https://resolution.andrewfbutler.com,https://the-resolution.netlify.app
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d

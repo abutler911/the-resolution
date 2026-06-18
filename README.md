@@ -85,6 +85,13 @@ Open http://localhost:5173.
 | GET    | `/api/progress/summary`   | ✓    | Accuracy, streak, lessons done    |
 | POST   | `/api/progress/lessons`   | ✓    | Mark a lesson complete            |
 
+## Deployment
+
+Production runs the **API on Render**, the **frontend on Netlify**, and the
+**database on Supabase**. Config lives in [`render.yaml`](render.yaml) and
+[`netlify.toml`](netlify.toml); see **[DEPLOY.md](DEPLOY.md)** for the full
+step-by-step (including pointing a custom subdomain at Netlify).
+
 ## Project structure
 
 ```

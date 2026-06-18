@@ -2,6 +2,11 @@
 
 const TOKEN_KEY = "resolution.token";
 
+// In production the frontend (Netlify) and API (Render) live on different
+// origins, so calls go to an absolute URL set at build time via VITE_API_URL.
+// Left empty in dev, where Vite proxies /api to the local server.
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
+
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -29,7 +34,7 @@ export async function api<T>(
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const res = await fetch(`/api${path}`, { ...options, headers });
+  const res = await fetch(`${API_BASE}/api${path}`, { ...options, headers });
 
   if (!res.ok) {
     let message = res.statusText;
