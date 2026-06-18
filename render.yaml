@@ -18,6 +18,8 @@ services:
     startCommand: npm run start --workspace server
     healthCheckPath: /api/health
     envVars:
+      - key: NODE_VERSION
+        value: "22"
       - key: NODE_ENV
         value: production
       # Supabase connection string (use the Session pooler URL, port 5432).
