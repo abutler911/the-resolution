@@ -46,19 +46,19 @@ export const INTERVALS: Record<string, number> = {
 };
 
 const INTERVAL_INFO: Record<string, string> = {
-  "Unison": "two notes at the same pitch — perfect consonance.",
-  "Minor 2nd": "the tightest, most dissonant step in Western music.",
-  "Major 2nd": "a whole step — the basic building block of scales.",
-  "Minor 3rd": "the darker third that gives minor chords their colour.",
-  "Major 3rd": "the bright third that defines major chords.",
-  "Perfect 4th": "stable, but with a gentle pull to resolve downward.",
-  "Tritone": "the restless 'devil's interval' that craves resolution.",
-  "Perfect 5th": "the most consonant interval after the octave; the root of power chords.",
-  "Minor 6th": "an inverted major 3rd — warm and expressive.",
-  "Major 6th": "an inverted minor 3rd — open and sweet.",
-  "Minor 7th": "the bluesy tension at the heart of dominant chords.",
-  "Major 7th": "a lush, jazzy interval one semitone below the octave.",
-  "Octave": "the same note doubled — pure consonance.",
+  "Unison": "Two notes at the exact same pitch — perfect consonance, zero distance. It's the reference point all other intervals are measured from.",
+  "Minor 2nd": "At just one semitone, it's the smallest and most dissonant step in Western music — the menace of the 'Jaws' theme. Invert it and you get a major 7th.",
+  "Major 2nd": "A whole step (two semitones) — the basic stride of most scales, as in the first two notes of 'Happy Birthday'. Its inversion is the minor 7th.",
+  "Minor 3rd": "Three semitones — the darker third that gives minor chords their melancholy. It's the opening leap of 'Greensleeves'; inverted it becomes a major 6th.",
+  "Major 3rd": "Four semitones — the bright, stable third that defines major chords, like the start of 'When the Saints Go Marching In'. It inverts to a minor 6th.",
+  "Perfect 4th": "Five semitones — strong and open (the 'Here Comes the Bride' leap), but with a subtle pull to resolve down to the 3rd. It inverts to a perfect 5th.",
+  "Tritone": "Six semitones, exactly half an octave — the restless 'diabolus in musica' whose instability drives the dominant chord's pull home. It's its own inversion.",
+  "Perfect 5th": "Seven semitones — the most consonant interval after the octave and the foundation of power chords, as in 'Twinkle, Twinkle'. It inverts to a perfect 4th.",
+  "Minor 6th": "Eight semitones — an inverted major 3rd, warm and yearning, like the opening of 'The Entertainer'. Common in expressive, romantic melodies.",
+  "Major 6th": "Nine semitones — an inverted minor 3rd, open and sweet, as in 'My Bonnie Lies Over the Ocean'. A favourite leap in folk and pop.",
+  "Minor 7th": "Ten semitones — the bluesy tension at the core of every dominant 7th chord. Think the first two notes of the 'Star Trek' theme; it inverts to a major 2nd.",
+  "Major 7th": "Eleven semitones — lush and jazzy, sitting just one semitone below the octave and leaning hard toward it. It inverts to a minor 2nd.",
+  "Octave": "Twelve semitones — the same note doubled at double the frequency. So consonant the two pitches sound like 'the same note', higher and lower.",
 };
 
 // --- Chords ----------------------------------------------------------------
@@ -81,20 +81,20 @@ export const CHORD_QUALITIES: Record<string, number[]> = {
 };
 
 const CHORD_INFO: Record<string, string> = {
-  "Major": "root, major 3rd, perfect 5th — bright and stable.",
-  "Minor": "root, minor 3rd, perfect 5th — the major chord's darker shadow.",
-  "Diminished": "two stacked minor 3rds (root, ♭3, ♭5) — tense and unstable.",
-  "Augmented": "two stacked major 3rds (root, 3, ♯5) — dreamlike and unresolved.",
-  "Suspended 2nd": "the 3rd is replaced by the 2nd — open and unresolved.",
-  "Suspended 4th": "the 3rd is replaced by the 4th — it wants to resolve down to the 3rd.",
-  "Major 6th": "a major triad plus a major 6th — sweet and vintage.",
-  "Minor 6th": "a minor triad plus a major 6th — moody, with a bright top note.",
-  "Major 7th": "a major triad plus a major 7th — lush and jazzy.",
-  "Dominant 7th": "a major triad plus a ♭7 — bluesy; pulls strongly toward the tonic.",
-  "Minor 7th": "a minor triad plus a ♭7 — smooth and mellow.",
-  "Half-diminished 7th": "a diminished triad plus a ♭7 — the classic ii° of a minor key.",
-  "Diminished 7th": "stacked minor 3rds all the way up — symmetrical and maximally tense.",
-  "Dominant 9th": "a dominant 7th extended with a 9th — rich and funky.",
+  "Major": "Spelled 1–3–5 (root, major 3rd, perfect 5th), it's the bright, stable, 'happy' chord that anchors most Western music. The major 3rd on the bottom is what makes it sound resolved.",
+  "Minor": "Spelled 1–♭3–5 — the same as major but with the 3rd lowered a semitone, which flips the mood from bright to sombre. It's the major chord's darker shadow.",
+  "Diminished": "Spelled 1–♭3–♭5 — two stacked minor 3rds. The flattened 5th creates a tense tritone with the root, so it sounds unstable and eager to resolve. It's the vii° of a major key.",
+  "Augmented": "Spelled 1–3–♯5 — two stacked major 3rds. Perfectly symmetrical, it has no clear home key, giving it a dreamlike, suspended quality used to build tension.",
+  "Suspended 2nd": "Spelled 1–2–5 — the 3rd is replaced by the 2nd. With no 3rd, it's neither major nor minor: open and ambiguous, it floats until the 3rd 'resolves' the suspension.",
+  "Suspended 4th": "Spelled 1–4–5 — the 3rd is replaced by the 4th, creating tension that classically falls back down to the 3rd (the 'Pinball Wizard' sound).",
+  "Major 6th": "A major triad plus a major 6th (1–3–5–6) — sweet and vintage, evoking 1940s jazz and barbershop. Softer and more relaxed than a major 7th.",
+  "Minor 6th": "A minor triad plus a major 6th (1–♭3–5–6) — moody underneath but with a bright top note. A staple of film noir and bossa nova.",
+  "Major 7th": "A major triad plus a major 7th (1–3–5–7) — lush, dreamy and unmistakably jazzy. The 7th sits a semitone below the octave, adding shimmer without much tension.",
+  "Dominant 7th": "A major triad plus a ♭7 (1–3–5–♭7) — the engine of tension and resolution. Its internal tritone pulls strongly toward the tonic, which is why V7→I feels like 'coming home'. Also the backbone of the blues.",
+  "Minor 7th": "A minor triad plus a ♭7 (1–♭3–5–♭7) — smooth, mellow and relaxed. The default 'ii' chord in jazz ii–V–I progressions.",
+  "Half-diminished 7th": "A diminished triad plus a ♭7 (1–♭3–♭5–♭7) — less harsh than a full diminished 7th. It's the classic ii(ø7) leading into a minor key.",
+  "Diminished 7th": "Stacked minor 3rds all the way up (1–♭3–♭5–𝄫7) — fully symmetrical and maximally tense. It can pivot to almost any key, so composers use it for dramatic modulation.",
+  "Dominant 9th": "A dominant 7th extended with a 9th (1–3–5–♭7–9) — rich, funky and soulful. Think James Brown stabs; the added 9th colours the dominant tension without softening its pull.",
 };
 
 // --- Scales ----------------------------------------------------------------
@@ -116,19 +116,19 @@ export const SCALES: Record<string, number[]> = {
 };
 
 const SCALE_INFO: Record<string, string> = {
-  "Major (Ionian)": "the do-re-mi major scale — bright and resolved.",
-  "Natural Minor (Aeolian)": "the natural minor — darker, built on the 6th degree of the major.",
-  "Dorian": "minor with a raised 6th — jazzy and hopeful.",
-  "Phrygian": "minor with a ♭2 — Spanish, exotic, dark.",
-  "Lydian": "major with a ♯4 — dreamy and floating.",
-  "Mixolydian": "major with a ♭7 — bluesy; the dominant-chord scale.",
-  "Locrian": "♭2 and ♭5 — the most unstable mode.",
-  "Harmonic Minor": "natural minor with a raised 7th — that exotic augmented-2nd pull.",
-  "Melodic Minor": "minor with raised 6th and 7th — smooth voice-leading to the tonic.",
-  "Major Pentatonic": "five notes, no semitones — the 'no wrong notes' scale.",
-  "Minor Pentatonic": "the backbone of rock and blues soloing.",
-  "Blues": "minor pentatonic plus the ♭5 'blue note' — gritty and expressive.",
-  "Whole Tone": "all whole steps — symmetrical, ambiguous, dreamlike.",
+  "Major (Ionian)": "The do-re-mi major scale — bright, resolved and the reference point for all other modes. Its half-steps fall between degrees 3–4 and 7–8, and that leading tone (7→8) is what makes it feel so 'finished'.",
+  "Natural Minor (Aeolian)": "The natural minor, built on the 6th degree of the major scale (A minor uses the same notes as C major). Darker than major thanks to its ♭3, ♭6 and ♭7.",
+  "Dorian": "Minor with a raised 6th — jazzy and hopeful rather than sad. That bright 6th over a minor chord is the 'So What' / 'Scarborough Fair' sound.",
+  "Phrygian": "Minor with a ♭2 — the lowered 2nd gives an instantly Spanish, flamenco, exotic flavour. The darkest of the common modes after Locrian.",
+  "Lydian": "Major with a ♯4 — the raised 4th makes it dreamy and floating, the classic 'film score wonder' sound (think 'The Simpsons' theme).",
+  "Mixolydian": "Major with a ♭7 — bright but bluesy. It's the scale that fits a dominant 7th chord, so it's everywhere in rock, funk and Celtic music.",
+  "Locrian": "Both a ♭2 and a ♭5 — its tonic chord is diminished, so it can barely establish a key. The most unstable and rarely-used mode.",
+  "Harmonic Minor": "Natural minor with a raised 7th, restoring the leading tone for a strong pull to the tonic. The gap between ♭6 and the raised 7th is an augmented 2nd — that exotic, Middle-Eastern leap.",
+  "Melodic Minor": "Minor with a raised 6th and 7th (ascending), smoothing the awkward augmented-2nd of harmonic minor for graceful voice-leading up to the tonic. Jazz uses it in both directions.",
+  "Major Pentatonic": "Five notes (1–2–3–5–6) with no half-steps, so nothing clashes — the 'no wrong notes' scale behind countless folk and pop melodies.",
+  "Minor Pentatonic": "Five notes (1–♭3–4–5–♭7) — the backbone of rock, blues and pop soloing. Forgiving and instantly expressive on guitar.",
+  "Blues": "Minor pentatonic plus the ♭5 'blue note' (1–♭3–4–♭5–5–♭7) — that extra chromatic passing tone is the gritty, vocal cry at the heart of the blues.",
+  "Whole Tone": "Six notes all a whole step apart — perfectly symmetrical with no leading tone, so it sounds ambiguous and weightless. Debussy used it for shimmering, dreamlike colour.",
 };
 
 function randomInt(maxExclusive: number): number {
@@ -195,9 +195,7 @@ export function generateIntervalQuestion(): GeneratedQuestion {
     notes: [lo, hi],
     midi: [BASE_MIDI + root, BASE_MIDI + top],
     correctAnswer: name,
-    explanation: `${lo} → ${hi} is a ${name} — ${semitones} semitone${
-      semitones === 1 ? "" : "s"
-    }. ${INTERVAL_INFO[name] ?? ""}`,
+    explanation: `${lo} → ${hi} is a ${name}. ${INTERVAL_INFO[name] ?? ""}`,
     choices: withDistractors(name, Object.keys(INTERVALS)),
   };
 }
