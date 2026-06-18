@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { AnswerPanel } from "../components/AnswerPanel";
 import { ChoiceGrid, Scoreboard, TypeTabs } from "../components/QuizControls";
 import { playNotes } from "../lib/audio";
 import { useQuiz, useQuizKeys } from "../hooks/useQuiz";
@@ -12,15 +13,6 @@ export default function TrainerPage() {
   const next = useCallback(() => {
     void loadQuestion();
   }, [loadQuestion]);
-
-  // Auto-advance after a correct answer; on a wrong one, pause so the player
-  // can study the right answer and continue when ready.
-  useEffect(() => {
-    if (selected && isCorrect) {
-      const t = setTimeout(next, 850);
-      return () => clearTimeout(t);
-    }
-  }, [selected, isCorrect, next]);
 
   useQuizKeys({
     enabled: !!question,
@@ -81,18 +73,14 @@ export default function TrainerPage() {
               />
             </div>
 
-            <div className="mt-5 min-h-[3rem]">
-              {selected &&
-                (isCorrect ? (
-                  <p className="font-display text-lg font-semibold text-emerald-400">
-                    ✓ Correct! Next up…
-                  </p>
-                ) : (
-                  <button onClick={next} className="btn-accent w-full">
-                    Answer: {question.correctAnswer} — Next →
-                  </button>
-                ))}
-            </div>
+            {selected && (
+              <AnswerPanel
+                isCorrect={isCorrect}
+                correctAnswer={question.correctAnswer}
+                explanation={question.explanation}
+                onNext={next}
+              />
+            )}
           </>
         ) : (
           <p className="py-8 text-zinc-500">Loading question…</p>
