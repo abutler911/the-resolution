@@ -1,0 +1,16 @@
+# Netlify config for the React client.
+# Set VITE_API_URL (the Render API base URL) in the Netlify dashboard under
+# Site settings → Environment variables.
+
+[build]
+  command = "npm install && npm run build --workspace client"
+  publish = "client/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback: let React Router handle client-side routes.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
