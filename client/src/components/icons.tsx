@@ -50,6 +50,14 @@ export const BookIcon = (p: IconProps) => (
   </Base>
 );
 
+export const ReferenceIcon = (p: IconProps) => (
+  <Base {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="2.5" />
+    <path d="M12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21" />
+  </Base>
+);
+
 export const GlossaryIcon = (p: IconProps) => (
   <Base {...p}>
     <circle cx="11" cy="11" r="7" />
