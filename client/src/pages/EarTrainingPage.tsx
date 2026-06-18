@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { AnswerPanel } from "../components/AnswerPanel";
 import { ChoiceGrid, Scoreboard, TypeTabs } from "../components/QuizControls";
 import { playNotes, type PlayMode } from "../lib/audio";
 import { useQuiz, useQuizKeys } from "../hooks/useQuiz";
@@ -31,14 +32,6 @@ export default function EarTrainingPage() {
     if (question) play(question);
     else void next();
   }
-
-  // Auto-advance after a correct answer.
-  useEffect(() => {
-    if (started && selected && isCorrect) {
-      const t = setTimeout(() => void next(), 900);
-      return () => clearTimeout(t);
-    }
-  }, [started, selected, isCorrect, next]);
 
   useQuizKeys({
     enabled: started && !!question,
@@ -112,21 +105,15 @@ export default function EarTrainingPage() {
               onAnswer={answer}
             />
 
-            <div className="mt-5 min-h-[3rem]">
-              {selected &&
-                (isCorrect ? (
-                  <p className="font-display text-lg font-semibold text-emerald-400">
-                    ✓ {question.prompt}
-                  </p>
-                ) : (
-                  <button
-                    onClick={() => void next()}
-                    className="btn-accent w-full"
-                  >
-                    {question.prompt} — Next →
-                  </button>
-                ))}
-            </div>
+            {selected && (
+              <AnswerPanel
+                isCorrect={isCorrect}
+                correctAnswer={question.correctAnswer}
+                explanation={question.explanation}
+                reveal={question.prompt}
+                onNext={() => void next()}
+              />
+            )}
           </>
         )}
       </div>

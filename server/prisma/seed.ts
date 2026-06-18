@@ -92,6 +92,61 @@ Start the major scale on a different degree and you get a **mode**:
 - **Aeolian** (natural minor)
 - **Locrian** — diminished, flat 2nd & flat 5th`,
   },
+  {
+    slug: "seventh-chords",
+    title: "Seventh Chords",
+    summary: "Add a fourth note and unlock the colours of jazz and blues.",
+    category: "CHORDS" as const,
+    order: 2,
+    body: `## Seventh Chords
+
+Stack one more third on a triad and you get a **seventh chord**:
+
+| Chord | Formula | Sound |
+|-------|---------|-------|
+| Major 7th | 1 – 3 – 5 – 7 | lush, dreamy |
+| Dominant 7th | 1 – 3 – 5 – ♭7 | bluesy, wants to resolve |
+| Minor 7th | 1 – ♭3 – 5 – ♭7 | smooth, mellow |
+| Half-diminished | 1 – ♭3 – ♭5 – ♭7 | the ii° of minor keys |
+| Diminished 7th | 1 – ♭3 – ♭5 – 𝄫7 | tense, symmetrical |
+
+The **dominant 7th** is the engine of tension → resolution: its tritone
+(between the 3rd and ♭7) pulls the ear straight home to the tonic.`,
+  },
+  {
+    slug: "suspended-and-added-chords",
+    title: "Suspended Chords",
+    summary: "Replace the third and leave the ear hanging.",
+    category: "CHORDS" as const,
+    order: 3,
+    body: `## Suspended Chords
+
+A **sus** chord removes the 3rd — the note that makes a chord major or minor —
+and replaces it with a neighbour:
+
+- **sus2** = 1 – 2 – 5 (open, airy)
+- **sus4** = 1 – 4 – 5 (tense, wants to fall to the 3rd)
+
+Because there's no 3rd, a sus chord sounds neither happy nor sad — it floats,
+unresolved, until the 3rd arrives. Pure tension and resolution.`,
+  },
+  {
+    slug: "pentatonic-and-blues",
+    title: "Pentatonic & Blues Scales",
+    summary: "Five notes that never sound wrong — plus the blue note.",
+    category: "SCALES" as const,
+    order: 2,
+    body: `## Pentatonic & Blues
+
+The **pentatonic** scales use just five notes, dropping the half-steps that
+create dissonance — which is why they're so forgiving to solo over.
+
+- **Major pentatonic**: 1 – 2 – 3 – 5 – 6
+- **Minor pentatonic**: 1 – ♭3 – 4 – 5 – ♭7
+
+Add the **♭5 "blue note"** to the minor pentatonic and you get the **blues
+scale**: 1 – ♭3 – 4 – ♭5 – 5 – ♭7 — the gritty heart of blues and rock.`,
+  },
 ];
 
 async function main() {

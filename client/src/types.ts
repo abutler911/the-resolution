@@ -12,6 +12,7 @@ export interface Question {
   notes: string[];
   midi: number[];
   correctAnswer: string;
+  explanation: string;
   choices: string[];
 }
 
