@@ -4,6 +4,7 @@ import {
   BookIcon,
   ChartIcon,
   EarIcon,
+  GlossaryIcon,
   HomeIcon,
   TrainerIcon,
 } from "./icons";
@@ -21,6 +22,7 @@ const NAV: NavItem[] = [
   { to: "/trainer", label: "Trainer", icon: TrainerIcon },
   { to: "/ear-training", label: "Ear", icon: EarIcon },
   { to: "/lessons", label: "Lessons", icon: BookIcon },
+  { to: "/glossary", label: "Glossary", icon: GlossaryIcon },
   { to: "/progress", label: "Progress", icon: ChartIcon, authOnly: true },
 ];
 
