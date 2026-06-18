@@ -1,32 +1,39 @@
 import type { QuizStats } from "../hooks/useQuiz";
 import type { ExerciseType } from "../types";
 
-const TYPES: { value: ExerciseType; label: string }[] = [
-  { value: "INTERVAL", label: "Intervals" },
-  { value: "CHORD_QUALITY", label: "Chords" },
-  { value: "SCALE", label: "Scales" },
-];
+const TYPE_LABELS: Record<ExerciseType, string> = {
+  INTERVAL: "Intervals",
+  CHORD_QUALITY: "Chords",
+  SCALE: "Scales",
+  KEY_SIGNATURE: "Keys",
+};
+
+// Audio-driven modes (Ear Training excludes Key Signatures).
+export const AUDIO_TYPES: ExerciseType[] = ["INTERVAL", "CHORD_QUALITY", "SCALE"];
+export const ALL_TYPES: ExerciseType[] = [...AUDIO_TYPES, "KEY_SIGNATURE"];
 
 export function TypeTabs({
   value,
   onChange,
+  options = ALL_TYPES,
 }: {
   value: ExerciseType;
   onChange: (type: ExerciseType) => void;
+  options?: ExerciseType[];
 }) {
   return (
     <div className="inline-flex rounded-xl border border-white/10 bg-white/5 p-1">
-      {TYPES.map((t) => (
+      {options.map((option) => (
         <button
-          key={t.value}
-          onClick={() => onChange(t.value)}
+          key={option}
+          onClick={() => onChange(option)}
           className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-            value === t.value
+            value === option
               ? "bg-brand text-white shadow-glow"
               : "text-zinc-400 hover:text-white"
           }`}
         >
-          {t.label}
+          {TYPE_LABELS[option]}
         </button>
       ))}
     </div>

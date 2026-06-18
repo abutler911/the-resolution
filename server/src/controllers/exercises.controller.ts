@@ -3,7 +3,12 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
 import { generateQuestion } from "../lib/musicTheory.js";
 
-const exerciseType = z.enum(["INTERVAL", "CHORD_QUALITY", "SCALE"]);
+const exerciseType = z.enum([
+  "INTERVAL",
+  "CHORD_QUALITY",
+  "SCALE",
+  "KEY_SIGNATURE",
+]);
 
 const generateSchema = z.object({
   type: exerciseType.default("INTERVAL"),

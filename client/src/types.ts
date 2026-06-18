@@ -4,7 +4,11 @@ export interface User {
   displayName: string;
 }
 
-export type ExerciseType = "INTERVAL" | "CHORD_QUALITY" | "SCALE";
+export type ExerciseType =
+  | "INTERVAL"
+  | "CHORD_QUALITY"
+  | "SCALE"
+  | "KEY_SIGNATURE";
 
 export interface Question {
   type: ExerciseType;

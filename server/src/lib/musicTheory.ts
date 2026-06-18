@@ -23,6 +23,12 @@ export const NOTE_NAMES = [
 
 export type NoteName = (typeof NOTE_NAMES)[number];
 
+export type ExerciseKind =
+  | "INTERVAL"
+  | "CHORD_QUALITY"
+  | "SCALE"
+  | "KEY_SIGNATURE";
+
 export function noteName(pitchClass: number): NoteName {
   return NOTE_NAMES[((pitchClass % 12) + 12) % 12];
 }
@@ -131,6 +137,47 @@ const SCALE_INFO: Record<string, string> = {
   "Whole Tone": "Six notes all a whole step apart — perfectly symmetrical with no leading tone, so it sounds ambiguous and weightless. Debussy used it for shimmering, dreamlike colour.",
 };
 
+// --- Key signatures --------------------------------------------------------
+
+interface MajorKey {
+  name: string;
+  root: number; // pitch class of the tonic
+  signature: string; // the answer label
+  accidentals: string; // the specific sharps/flats, correctly spelled
+}
+
+const MAJOR_KEYS: MajorKey[] = [
+  { name: "C major", root: 0, signature: "none", accidentals: "no sharps or flats" },
+  { name: "G major", root: 7, signature: "1 sharp", accidentals: "F♯" },
+  { name: "D major", root: 2, signature: "2 sharps", accidentals: "F♯ C♯" },
+  { name: "A major", root: 9, signature: "3 sharps", accidentals: "F♯ C♯ G♯" },
+  { name: "E major", root: 4, signature: "4 sharps", accidentals: "F♯ C♯ G♯ D♯" },
+  { name: "B major", root: 11, signature: "5 sharps", accidentals: "F♯ C♯ G♯ D♯ A♯" },
+  { name: "F♯ major", root: 6, signature: "6 sharps", accidentals: "F♯ C♯ G♯ D♯ A♯ E♯" },
+  { name: "F major", root: 5, signature: "1 flat", accidentals: "B♭" },
+  { name: "B♭ major", root: 10, signature: "2 flats", accidentals: "B♭ E♭" },
+  { name: "E♭ major", root: 3, signature: "3 flats", accidentals: "B♭ E♭ A♭" },
+  { name: "A♭ major", root: 8, signature: "4 flats", accidentals: "B♭ E♭ A♭ D♭" },
+  { name: "D♭ major", root: 1, signature: "5 flats", accidentals: "B♭ E♭ A♭ D♭ G♭" },
+  { name: "G♭ major", root: 6, signature: "6 flats", accidentals: "B♭ E♭ A♭ D♭ G♭ C♭" },
+];
+
+const SIGNATURE_LABELS = [
+  "none",
+  "1 sharp",
+  "2 sharps",
+  "3 sharps",
+  "4 sharps",
+  "5 sharps",
+  "6 sharps",
+  "1 flat",
+  "2 flats",
+  "3 flats",
+  "4 flats",
+  "5 flats",
+  "6 flats",
+];
+
 function randomInt(maxExclusive: number): number {
   return Math.floor(Math.random() * maxExclusive);
 }
@@ -143,7 +190,7 @@ function pick<T>(items: T[]): T {
 const BASE_MIDI = 60;
 
 export interface GeneratedQuestion {
-  type: "INTERVAL" | "CHORD_QUALITY" | "SCALE";
+  type: ExerciseKind;
   prompt: string;
   notes: string[];
   // Absolute MIDI pitch numbers for audio playback. Unlike `notes` (pitch
@@ -236,9 +283,25 @@ export function generateScaleQuestion(): GeneratedQuestion {
   };
 }
 
-export function generateQuestion(
-  type: "INTERVAL" | "CHORD_QUALITY" | "SCALE",
-): GeneratedQuestion {
+export function generateKeySignatureQuestion(): GeneratedQuestion {
+  const key = pick(MAJOR_KEYS);
+  const majorScale = [0, 2, 4, 5, 7, 9, 11];
+  const notes = majorScale.map((i) => noteName(key.root + i));
+  return {
+    type: "KEY_SIGNATURE",
+    prompt: `How many sharps or flats are in ${key.name}?`,
+    notes,
+    // Play the key's major scale so the ear connects to the answer.
+    midi: [...majorScale, 12].map((i) => BASE_MIDI + key.root + i),
+    correctAnswer: key.signature,
+    explanation: `${key.name} has ${
+      key.signature === "none" ? "no sharps or flats" : key.signature
+    } (${key.accidentals}). Sharps always appear in the order F C G D A E B; flats follow the reverse, B E A D G C F.`,
+    choices: withDistractors(key.signature, SIGNATURE_LABELS),
+  };
+}
+
+export function generateQuestion(type: ExerciseKind): GeneratedQuestion {
   switch (type) {
     case "INTERVAL":
       return generateIntervalQuestion();
@@ -246,5 +309,7 @@ export function generateQuestion(
       return generateChordQuestion();
     case "SCALE":
       return generateScaleQuestion();
+    case "KEY_SIGNATURE":
+      return generateKeySignatureQuestion();
   }
 }

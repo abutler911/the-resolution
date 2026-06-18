@@ -1,6 +1,11 @@
 import { useCallback, useState } from "react";
 import { AnswerPanel } from "../components/AnswerPanel";
-import { ChoiceGrid, Scoreboard, TypeTabs } from "../components/QuizControls";
+import {
+  AUDIO_TYPES,
+  ChoiceGrid,
+  Scoreboard,
+  TypeTabs,
+} from "../components/QuizControls";
 import { playNotes, type PlayMode } from "../lib/audio";
 import { useQuiz, useQuizKeys } from "../hooks/useQuiz";
 import type { ExerciseType, Question } from "../types";
@@ -46,6 +51,7 @@ export default function EarTrainingPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <TypeTabs
           value={type}
+          options={AUDIO_TYPES}
           onChange={(t) => {
             setType(t);
             setStarted(false);
