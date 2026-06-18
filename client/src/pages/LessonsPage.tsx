@@ -56,17 +56,36 @@ export default function LessonsPage() {
     }
   }, [active, completed]);
 
-  if (loading) return <p className="text-slate-500">Loading lessons…</p>;
+  if (loading) return <p className="text-zinc-500">Loading lessons…</p>;
 
   const grouped = groupByCategory(lessons);
   const isDone = active ? completed.has(active.id) : false;
 
   return (
-    <div className="grid gap-8 md:grid-cols-[260px_1fr]">
-      <aside className="space-y-6">
+    <div className="grid gap-6 md:grid-cols-[260px_1fr]">
+      {/* Mobile: horizontal pill scroller */}
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:hidden">
+        {lessons.map((lesson) => (
+          <button
+            key={lesson.id}
+            onClick={() => openLesson(lesson.slug)}
+            className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition ${
+              active?.slug === lesson.slug
+                ? "border-transparent bg-brand text-white"
+                : "border-white/10 bg-white/5 text-zinc-300"
+            }`}
+          >
+            {completed.has(lesson.id) && "✓ "}
+            {lesson.title}
+          </button>
+        ))}
+      </div>
+
+      {/* Desktop: grouped vertical sidebar */}
+      <aside className="hidden space-y-6 md:block">
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category}>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
               {category}
             </h3>
             <ul className="space-y-1">
@@ -74,22 +93,15 @@ export default function LessonsPage() {
                 <li key={lesson.id}>
                   <button
                     onClick={() => openLesson(lesson.slug)}
-                    className={`flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm transition ${
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition ${
                       active?.slug === lesson.slug
-                        ? "bg-tension text-white"
-                        : "hover:bg-slate-100"
+                        ? "bg-white/10 text-white"
+                        : "text-zinc-400 hover:bg-white/5 hover:text-white"
                     }`}
                   >
                     <span>{lesson.title}</span>
                     {completed.has(lesson.id) && (
-                      <span
-                        aria-label="completed"
-                        className={
-                          active?.slug === lesson.slug
-                            ? "text-resolve"
-                            : "text-emerald-500"
-                        }
-                      >
+                      <span aria-label="completed" className="text-emerald-400">
                         ✓
                       </span>
                     )}
@@ -104,12 +116,12 @@ export default function LessonsPage() {
       <article className="card">
         {active ? (
           <>
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h1 className="font-display text-2xl font-bold text-tension">
+                <h1 className="gradient-text font-display text-2xl font-bold sm:text-3xl">
                   {active.title}
                 </h1>
-                <p className="mt-1 text-slate-600">{active.summary}</p>
+                <p className="mt-1 text-zinc-400">{active.summary}</p>
               </div>
               {user && (
                 <button
@@ -121,16 +133,16 @@ export default function LessonsPage() {
                 </button>
               )}
             </div>
-            <hr className="my-4" />
-            <div className="prose prose-slate max-w-none prose-headings:font-display prose-a:text-tension">
+            <hr className="my-5 border-white/10" />
+            <div className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-tension prose-strong:text-white prose-code:text-resolve prose-th:text-zinc-200">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {active.body}
               </ReactMarkdown>
             </div>
           </>
         ) : (
-          <p className="text-slate-500">
-            Select a lesson from the left to begin.
+          <p className="py-8 text-center text-zinc-500">
+            Select a lesson to begin.
           </p>
         )}
       </article>

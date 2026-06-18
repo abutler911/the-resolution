@@ -20,7 +20,7 @@ export default function ProgressPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="text-slate-500">Loading progress…</p>;
+  if (loading) return <p className="text-zinc-500">Loading progress…</p>;
   if (!summary) return null;
 
   const overall = summary.totals.total
@@ -30,15 +30,15 @@ export default function ProgressPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-bold">
+        <h1 className="font-display text-2xl font-bold sm:text-3xl">
           Hey {user?.displayName} 👋
         </h1>
-        <p className="text-slate-600">Here's how your practice is going.</p>
+        <p className="text-zinc-400">Here's how your practice is going.</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Current streak" value={`${summary.streak} 🔥`} />
-        <StatCard label="Overall accuracy" value={`${overall}%`} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatCard label="Current streak" value={`${summary.streak}`} suffix="🔥" />
+        <StatCard label="Overall accuracy" value={`${overall}`} suffix="%" />
         <StatCard
           label="Lessons completed"
           value={String(summary.completedLessons)}
@@ -48,7 +48,7 @@ export default function ProgressPage() {
       <div className="card">
         <h2 className="mb-4 font-display text-lg font-semibold">By topic</h2>
         {Object.keys(summary.byType).length === 0 ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-zinc-500">
             No attempts yet — head to the Trainer to get started.
           </p>
         ) : (
@@ -59,17 +59,17 @@ export default function ProgressPage() {
                 : 0;
               return (
                 <li key={type}>
-                  <div className="mb-1 flex justify-between text-sm">
+                  <div className="mb-1.5 flex justify-between text-sm">
                     <span className="font-medium">
                       {TYPE_LABELS[type] ?? type}
                     </span>
-                    <span className="text-slate-500">
+                    <span className="font-mono text-zinc-400">
                       {stat.correct}/{stat.total} ({pct}%)
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-white/10">
                     <div
-                      className="h-full bg-tension"
+                      className="h-full rounded-full bg-brand transition-all"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -83,11 +83,22 @@ export default function ProgressPage() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  suffix,
+}: {
+  label: string;
+  value: string;
+  suffix?: string;
+}) {
   return (
     <div className="card text-center">
-      <p className="text-3xl font-bold text-tension">{value}</p>
-      <p className="mt-1 text-sm text-slate-500">{label}</p>
+      <p className="font-display text-4xl font-bold">
+        <span className="gradient-text">{value}</span>
+        {suffix && <span className="text-2xl">{suffix}</span>}
+      </p>
+      <p className="mt-1 text-sm text-zinc-500">{label}</p>
     </div>
   );
 }

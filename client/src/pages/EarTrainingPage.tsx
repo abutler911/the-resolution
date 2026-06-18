@@ -49,8 +49,8 @@ export default function EarTrainingPage() {
   });
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="mx-auto max-w-xl space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <TypeTabs
           value={type}
           onChange={(t) => {
@@ -62,29 +62,32 @@ export default function EarTrainingPage() {
       </div>
 
       {!user && (
-        <p className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-800">
-          You're practicing as a guest.{" "}
-          <a href="/register" className="font-medium underline">
+        <p className="rounded-xl border border-resolve/20 bg-resolve/10 px-4 py-2.5 text-sm text-resolve">
+          Practicing as a guest.{" "}
+          <a href="/register" className="font-semibold underline">
             Sign up
           </a>{" "}
-          to save your progress.
+          to save progress.
         </p>
       )}
 
       <div className="card text-center">
         {!started || !question ? (
-          <div className="py-8">
-            <p className="mb-4 text-slate-600">
+          <div className="py-10">
+            <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-brand text-3xl shadow-glow">
+              👂
+            </div>
+            <p className="mb-5 text-zinc-400">
               Listen and identify what you hear — no notes shown.
             </p>
-            <button onClick={start} className="btn-primary">
+            <button onClick={start} className="btn-primary px-6 py-3 text-base">
               ▶ Start ear training
             </button>
           </div>
         ) : (
           <>
-            <p className="mb-4 text-xs uppercase tracking-wide text-slate-400">
-              {question.type.replace("_", " ")} — by ear
+            <p className="chip mb-4 inline-flex">
+              {question.type.replace("_", " ").toLowerCase()} · by ear
             </p>
 
             <div className="mb-6 flex justify-center gap-2">
@@ -109,14 +112,17 @@ export default function EarTrainingPage() {
               onAnswer={answer}
             />
 
-            <div className="mt-5 min-h-[2.5rem]">
+            <div className="mt-5 min-h-[3rem]">
               {selected &&
                 (isCorrect ? (
-                  <p className="font-medium text-emerald-600">
+                  <p className="font-display text-lg font-semibold text-emerald-400">
                     ✓ {question.prompt}
                   </p>
                 ) : (
-                  <button onClick={() => void next()} className="btn-accent w-full">
+                  <button
+                    onClick={() => void next()}
+                    className="btn-accent w-full"
+                  >
                     {question.prompt} — Next →
                   </button>
                 ))}

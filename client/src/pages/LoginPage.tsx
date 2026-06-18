@@ -26,15 +26,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm">
-      <h1 className="font-display text-2xl font-bold">Welcome back</h1>
-      <form onSubmit={handleSubmit} className="card mt-4 space-y-4">
+    <div className="mx-auto max-w-sm pt-6">
+      <h1 className="text-center font-display text-3xl font-bold">
+        Welcome <span className="gradient-text">back</span>
+      </h1>
+      <form onSubmit={handleSubmit} className="card mt-6 space-y-4">
         {error && (
-          <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          <p className="rounded-lg border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
             {error}
           </p>
         )}
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-zinc-300">
           Email
           <input
             type="email"
@@ -44,7 +46,7 @@ export default function LoginPage() {
             className="input mt-1"
           />
         </label>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-zinc-300">
           Password
           <input
             type="password"
@@ -58,7 +60,7 @@ export default function LoginPage() {
           {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
-      <p className="mt-4 text-center text-sm text-slate-600">
+      <p className="mt-4 text-center text-sm text-zinc-400">
         No account?{" "}
         <Link to="/register" className="font-medium text-tension">
           Create one
