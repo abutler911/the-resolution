@@ -17,7 +17,7 @@ export default function LoginPage() {
     setBusy(true);
     try {
       await login(email, password);
-      navigate("/trainer");
+      navigate("/practice");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong");
     } finally {
