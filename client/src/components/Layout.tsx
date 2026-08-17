@@ -1,13 +1,12 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
-  BookIcon,
   ChartIcon,
-  EarIcon,
-  GlossaryIcon,
-  HomeIcon,
-  ReferenceIcon,
-  TrainerIcon,
+  LogIcon,
+  PianoIcon,
+  RepertoireIcon,
+  TargetIcon,
+  TheoryIcon,
 } from "./icons";
 
 type NavItem = {
@@ -16,22 +15,24 @@ type NavItem = {
   icon: (p: { className?: string }) => JSX.Element;
   end?: boolean;
   authOnly?: boolean;
+  /** Kept off the mobile tab bar, which only has room for five. */
+  desktopOnly?: boolean;
 };
 
 const NAV: NavItem[] = [
-  { to: "/", label: "Home", icon: HomeIcon, end: true },
-  { to: "/trainer", label: "Trainer", icon: TrainerIcon },
-  { to: "/ear-training", label: "Ear", icon: EarIcon },
-  { to: "/lessons", label: "Lessons", icon: BookIcon },
-  { to: "/reference", label: "Reference", icon: ReferenceIcon },
-  { to: "/glossary", label: "Glossary", icon: GlossaryIcon },
-  { to: "/progress", label: "Progress", icon: ChartIcon, authOnly: true },
+  { to: "/practice", label: "Practice", icon: PianoIcon, end: true, authOnly: true },
+  { to: "/practice/log", label: "Log", icon: LogIcon, authOnly: true },
+  { to: "/practice/repertoire", label: "Repertoire", icon: RepertoireIcon, authOnly: true },
+  { to: "/practice/goals", label: "Goals", icon: TargetIcon, authOnly: true, desktopOnly: true },
+  { to: "/practice/insights", label: "Insights", icon: ChartIcon, authOnly: true },
+  { to: "/theory", label: "Theory", icon: TheoryIcon },
 ];
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const items = NAV.filter((i) => !i.authOnly || user);
+  const items = NAV.filter((item) => !item.authOnly || user);
+  const tabs = items.filter((item) => !item.desktopOnly);
 
   function handleLogout() {
     logout();
@@ -92,7 +93,7 @@ export default function Layout() {
       {/* Mobile bottom tab bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-ink-800/80 backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-md items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)]">
-          {items.map((item) => {
+          {tabs.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink

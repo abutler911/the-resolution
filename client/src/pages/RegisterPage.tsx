@@ -18,7 +18,7 @@ export default function RegisterPage() {
     setBusy(true);
     try {
       await register(email, displayName, password);
-      navigate("/trainer");
+      navigate("/practice");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong");
     } finally {

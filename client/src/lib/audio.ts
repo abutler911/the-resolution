@@ -8,7 +8,9 @@
 
 let context: AudioContext | null = null;
 
-function getContext(): AudioContext {
+// Shared across every sound in the app — browsers cap how many audio contexts
+// a page may open, so the metronome and the trainer play through this one.
+export function getContext(): AudioContext {
   if (!context) {
     const Ctor =
       window.AudioContext ??

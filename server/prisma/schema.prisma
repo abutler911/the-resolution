@@ -20,6 +20,9 @@ model User {
 
   attempts        ExerciseAttempt[]
   lessonProgress  LessonProgress[]
+  pieces          Piece[]
+  sessions        PracticeSession[]
+  goals           PracticeGoal[]
 }
 
 // A unit of learning content (e.g. "The Circle of Fifths", "Diatonic Triads").
@@ -82,4 +85,169 @@ model LessonProgress {
   updatedAt   DateTime @updatedAt
 
   @@unique([userId, lessonId])
+}
+
+// ---------------------------------------------------------------------------
+// Practice tracking
+// ---------------------------------------------------------------------------
+
+// Something the user works on at the piano: a piece of repertoire, an étude,
+// a technical exercise. Owned by one user — this is a personal library.
+model Piece {
+  id          String      @id @default(cuid())
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  title       String
+  composer    String?
+  kind        PieceKind   @default(REPERTOIRE)
+  status      PieceStatus @default(LEARNING)
+  // Optional musical metadata, all free-form so nothing blocks logging.
+  keySignature String?
+  // Tempo the piece is ultimately meant to sit at (BPM). Progress toward it is
+  // measured against the tempi recorded on segments.
+  targetTempo Int?
+  notes       String?
+  archivedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  segments PracticeSegment[]
+  goals    PracticeGoal[]
+
+  @@index([userId, status])
+}
+
+enum PieceKind {
+  REPERTOIRE
+  ETUDE
+  EXERCISE
+  SCALE
+  IMPROV
+  OTHER
+}
+
+enum PieceStatus {
+  WISHLIST
+  LEARNING
+  POLISHING
+  PERFORMANCE_READY
+  MAINTENANCE
+  SHELVED
+}
+
+// One sitting at the instrument. Holds the "how it went" context; the detail of
+// what was actually worked on lives in its segments.
+model PracticeSession {
+  id       String   @id @default(cuid())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  // The calendar day practised, normalised to UTC midnight so day-bucketed
+  // aggregates (streaks, heatmaps) are stable regardless of clock time.
+  date     DateTime
+  // Denormalised sum of segment minutes — every read path wants it, and
+  // segments are only ever written through the session endpoints.
+  totalMinutes Int   @default(0)
+  // Self-reported 1–5 ratings for the session as a whole.
+  mood     Int?
+  focus    Int?
+  notes    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  segments PracticeSegment[]
+
+  @@index([userId, date])
+}
+
+// What exactly was practised, inside a session: the unit that makes the log
+// worth keeping. One segment = one thing worked on for some number of minutes.
+model PracticeSegment {
+  id        String          @id @default(cuid())
+  session   PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  focusArea FocusArea       @default(REPERTOIRE)
+  // Optional link to a tracked piece; `label` covers anything not in the
+  // library (a scale, a warm-up drill, an idea) without forcing a Piece row.
+  piece     Piece?          @relation(fields: [pieceId], references: [id], onDelete: SetNull)
+  pieceId   String?
+  label     String?
+  minutes   Int
+  // Working tempo in BPM, and the bars drilled — the two things that show
+  // concrete improvement on a passage over weeks.
+  tempo     Int?
+  measureFrom Int?
+  measureTo   Int?
+  hands     Hands?
+  metronome Boolean         @default(false)
+  // 1–5 self-rating of how the segment went.
+  quality   Int?
+  notes     String?
+  // Ordering within the session.
+  position  Int             @default(0)
+
+  @@index([sessionId])
+  @@index([pieceId])
+}
+
+enum FocusArea {
+  WARMUP
+  TECHNIQUE
+  SCALES
+  REPERTOIRE
+  SIGHT_READING
+  EAR_TRAINING
+  THEORY
+  IMPROVISATION
+  OTHER
+}
+
+enum Hands {
+  LEFT
+  RIGHT
+  BOTH
+}
+
+// A target the user sets for themselves. `metric` decides what is counted and
+// `period` decides the window it is counted over; progress is computed on read
+// rather than stored, so edits to past sessions stay consistent.
+model PracticeGoal {
+  id        String     @id @default(cuid())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  title     String
+  metric    GoalMetric @default(MINUTES)
+  period    GoalPeriod @default(WEEKLY)
+  // Interpreted per metric: minutes, session count, or BPM.
+  target    Int
+  // Optional narrowing: count only this focus area, or only this piece.
+  focusArea FocusArea?
+  piece     Piece?     @relation(fields: [pieceId], references: [id], onDelete: Cascade)
+  pieceId   String?
+  startDate DateTime   @default(now())
+  // Only meaningful for TOTAL goals ("by recital day"); null means open-ended.
+  endDate   DateTime?
+  archivedAt DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId, archivedAt])
+}
+
+enum GoalMetric {
+  // Minutes practised in the window.
+  MINUTES
+  // Number of practice sessions in the window.
+  SESSIONS
+  // Number of distinct days practised in the window.
+  DAYS
+  // Highest tempo recorded for the linked piece — a "get it to 120bpm" goal.
+  TEMPO
+}
+
+enum GoalPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+  // A single cumulative run from startDate (to endDate, if set).
+  TOTAL
 }

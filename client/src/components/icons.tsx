@@ -73,3 +73,45 @@ export const ChartIcon = (p: IconProps) => (
     <path d="M8 20v-6M13 20V8M18 20v-9" />
   </Base>
 );
+
+// A keyboard, for the practice home.
+export const PianoIcon = (p: IconProps) => (
+  <Base {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M8 5v8M12 5v8M16 5v8" />
+    <path d="M3 13h18" />
+  </Base>
+);
+
+// Stopwatch — logging a session.
+export const LogIcon = (p: IconProps) => (
+  <Base {...p}>
+    <circle cx="12" cy="13" r="7.5" />
+    <path d="M12 9.5V13l2.5 1.5" />
+    <path d="M9.5 2.5h5" />
+  </Base>
+);
+
+// Stacked scores on a shelf.
+export const RepertoireIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M5 4h4v16H5zM11 4h3.5l3.5 15.5-3.4.8z" />
+    <path d="M5 8h4M5 16h4" />
+  </Base>
+);
+
+export const TargetIcon = (p: IconProps) => (
+  <Base {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="12" cy="12" r="0.9" fill="currentColor" />
+  </Base>
+);
+
+// Tuning fork — the theory corner of the app.
+export const TheoryIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M9 3v7a3 3 0 0 0 6 0V3" />
+    <path d="M12 13v8" />
+  </Base>
+);
