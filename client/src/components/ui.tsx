@@ -199,23 +199,40 @@ export function Modal({
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
 
+  // Callers pass `onClose` as an inline arrow, so its identity changes on every
+  // render. Kept in a ref, the Escape listener below can depend on `open` alone
+  // — depending on the callback re-ran this effect on every keystroke, and the
+  // focus() call inside it pulled focus out of whatever field was being typed
+  // into (which closes the keyboard on mobile).
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   useEffect(() => {
     if (!open) return;
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") onCloseRef.current();
     }
     document.addEventListener("keydown", onKeyDown);
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    panelRef.current?.focus();
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [open, onClose]);
+  }, [open]);
+
+  // Move focus into the dialog once, when it opens — but never steal it from a
+  // field that already has it, so an autofocused input keeps the caret.
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    if (panel && !panel.contains(document.activeElement)) panel.focus();
+  }, [open]);
 
   if (!open) return null;
 
